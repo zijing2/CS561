@@ -2,18 +2,16 @@
 database management system
 
 /*
+ *	Author: zijing Huang
+ *	CWID:10414952
+ *
  * File - sdap.pgc (Need the .pgc extension!) 
  *
- * Desc - This is a simple skeleton program using Embedded SQL to read all
- *        of the rows from the table "sales" and output to the console.
- *        Simple but it contains all of the essential features of ESQL 
- *        discussed in class!
- *
  * Steps to run this program : 
- *  1. In the program (L49), modify [dbname], [username], [password] to
- *     yours ([dbname] is the same as your [username] by default).
- *  2. Preprocessor - $ ecpg -I "C:\Program Files\PostgreSQL\9.4\include" sdap.pgc
- *  3. Compile      - $ gcc -c -I "C:\Program Files\PostgreSQL\9.4\include" sdap.c
- *  4. Link         - $ gcc -L "C:\Program Files\PostgreSQL\9.4\lib" -lecpg -o sdap sdap.o
- *  5. Execute      - $ .\sdap
+ *  1. create a database on your db system using db name:huangzijing or you can modify line 55 to match your db name
+ *  2. create a table 'sales' and import the data we need
+ *  3. Preprocessor - $ ecpg -I "C:\Program Files\PostgreSQL\9.4\include" sdap.pgc
+ *  4. Compile      - $ gcc -c -I "C:\Program Files\PostgreSQL\9.4\include" sdap.c
+ *  5. Link         - $ gcc -L "C:\Program Files\PostgreSQL\9.4\lib" -lecpg -o sdap sdap.o
+ *  6. Execute      - $ .\sdap
  */
