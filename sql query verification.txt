@@ -1,0 +1,224 @@
+//sql query verification
+
+select prod as PRODUCT, MAX(quant) as MAX_Q, MIN(quant) as MIN_Q, AVG(quant) as AVG_Q from sales group by prod;
+
+Eggs	4972	128	2491.2653061224489796
+Milk	4986	26	2195.44
+Soap	4954	70	2237.2888888888888889
+Fruits	4793	24	2434.619047619047619
+Butter	4969	156	2105.2708333333333333
+Bread	4901	42	2190.3333333333333333
+Pepsi	4942	94	2704.3333333333333333
+Cookies	4994	132	2502
+Yogurt	4909	17	2457.2857142857142857
+Coke	4757	81	2525.4313725490196078
+
+
+select cust,prod,MAX(quant)from sales where state='CT' and year>=2000 and year<=2005 group by prod,cust;
+
+Knuth	Bread	2063
+Sam	Fruits	2802
+Emily	Butter	2862
+Emily	Bread	1626
+Helen	Coke	3840
+Emily	Yogurt	3765
+Bloom	Pepsi	94
+Bloom	Cookies	4546
+Helen	Cookies	1194
+Helen	Pepsi	2768
+Sam	Soap	2461
+Bloom	Bread	2220
+Knuth	Coke	4027
+Bloom	Butter	4279
+Knuth	Yogurt	301
+Knuth	Milk	58
+Bloom	Fruits	4085
+Emily	Soap	4106
+Knuth	Eggs	4317
+Helen	Fruits	2360
+Emily	Eggs	2722
+Knuth	Soap	2915
+Sam	Yogurt	4728
+Emily	Milk	2589
+Bloom	Soap	4623
+Helen	Milk	4429
+Sam	Bread	1599
+Helen	Eggs	4162
+Sam	Pepsi	4865
+Bloom	Milk	2843
+Helen	Soap	1301
+Knuth	Fruits	3756
+Bloom	Eggs	4177
+Emily	Cookies	4925
+Bloom	Yogurt	4004
+Emily	Pepsi	4531
+Knuth	Pepsi	1481
+Knuth	Cookies	4994
+Helen	Yogurt	3832
+Sam	Milk	1607
+Helen	Bread	4114
+Emily	Coke	4379
+Helen	Butter	306
+
+select cust,prod,MIN(quant)from sales where state='NY' group by prod,cust;
+
+Knuth	Bread	3370
+Bloom	Coke	1229
+Knuth	Butter	156
+Sam	Fruits	2409
+Emily	Butter	2826
+Emily	Bread	492
+Helen	Coke	668
+Bloom	Pepsi	254
+Emily	Yogurt	730
+Bloom	Cookies	4570
+Helen	Cookies	1080
+Helen	Pepsi	1931
+Sam	Soap	1798
+Knuth	Yogurt	3445
+Knuth	Milk	2424
+Bloom	Fruits	612
+Emily	Soap	3218
+Knuth	Eggs	3788
+Helen	Fruits	2774
+Emily	Eggs	1595
+Knuth	Soap	1002
+Sam	Coke	142
+Emily	Milk	4986
+Sam	Yogurt	1317
+Helen	Milk	77
+Sam	Bread	2282
+Emily	Fruits	859
+Sam	Butter	1234
+Helen	Eggs	3200
+Bloom	Milk	1820
+Sam	Pepsi	3189
+Sam	Cookies	3376
+Knuth	Fruits	24
+Bloom	Eggs	666
+Emily	Cookies	1656
+Emily	Pepsi	538
+Bloom	Yogurt	4043
+Knuth	Pepsi	3879
+Knuth	Cookies	1485
+Helen	Yogurt	787
+Sam	Milk	987
+Helen	Bread	389
+Emily	Coke	1330
+Sam	Eggs	1417
+Helen	Butter	163
+Bloom	Bread	3792
+Knuth	Coke	1946
+Bloom	Butter	1054
+
+select cust,prod,MIN(quant)from sales where state='NJ' group by prod,cust;
+
+Knuth	Bread	1013
+Bloom	Coke	279
+Emily	Butter	1312
+Sam	Fruits	1311
+Emily	Bread	141
+Helen	Coke	755
+Bloom	Pepsi	526
+Emily	Yogurt	2336
+Bloom	Cookies	3887
+Helen	Cookies	1965
+Helen	Pepsi	1983
+Sam	Soap	165
+Knuth	Coke	766
+Bloom	Butter	3718
+Knuth	Yogurt	2167
+Bloom	Fruits	776
+Emily	Soap	623
+Knuth	Eggs	1339
+Emily	Eggs	3030
+Helen	Fruits	415
+Knuth	Soap	657
+Emily	Milk	3839
+Sam	Yogurt	1286
+Sam	Bread	1378
+Bloom	Soap	4364
+Helen	Milk	1839
+Emily	Fruits	3743
+Sam	Butter	1715
+Bloom	Milk	1106
+Sam	Pepsi	1097
+Helen	Soap	712
+Knuth	Fruits	733
+Bloom	Eggs	559
+Emily	Cookies	173
+Bloom	Yogurt	1203
+Emily	Pepsi	2591
+Knuth	Pepsi	277
+Knuth	Cookies	2154
+Helen	Yogurt	2096
+Helen	Bread	1687
+Sam	Milk	4522
+Emily	Coke	1301
+Helen	Butter	728
+Sam	Eggs	1091
+Bloom	Bread	944
+
+
+//result from my c progarm
+Product  MAX_Q CUSTOMER   DATE       ST MIN_Q CUSTOMER   DATE       ST AVE_Q 
+ ======== ===== ========== ========== == ===== ========== ========== == ===== 
+ Pepsi     4942 Knuth      09/11/2004 NY    94 Bloom      07/10/2000 CT   2704 
+ Bread     4901 Helen      05/30/2008 NY    42 Emily      09/28/2005 PA   2190 
+ Fruits    4793 Sam        09/15/2006 NJ    24 Knuth      08/26/2001 NY   2434 
+ Milk      4986 Emily      11/12/2002 NY    26 Emily      07/02/2008 CT   2195 
+ Soap      4954 Sam        04/06/2003 PA    70 Emily      09/04/2003 CT   2237 
+ Eggs      4972 Bloom      01/03/2004 NJ   128 Emily      11/26/2002 PA   2491 
+ Yogurt    4909 Helen      08/08/2007 NY    17 Bloom      07/25/2004 PA   2457 
+ Cookies   4994 Knuth      07/17/2003 CT   132 Sam        10/09/2007 CT   2502 
+ Coke      4757 Knuth      02/23/2003 PA    81 Emily      11/22/2003 CT   2525 
+ Butter    4969 Helen      06/04/2001 NY   156 Knuth      10/02/2007 NY   2105 
+
+ CUSTOMER PRODUCT CT_MAX DATE       NY_MIN DATE       NJ_MIN DATE      
+ ======== ======= ====== ========== ====== ========== ====== ========= 
+ Emily    Soap      4106 11/15/2003   3218 01/27/2006    623 07/31/2007 
+ Knuth    Coke      4027 04/09/2002   1946 05/09/2005    766 10/09/2002 
+ Knuth    Milk        58 03/25/2001   2424 04/13/2006   null       null
+ Knuth    Yogurt     301 04/22/2005   3445 02/29/2000   2167 06/09/2001 
+ Helen    Pepsi     2768 09/24/2004   1931 04/13/2006   1983 02/13/2001 
+ Helen    Cookies   1194 12/23/2004   1080 07/19/2004   1965 07/15/2005 
+ Emily    Bread     1626 06/04/2001    492 03/21/2001    141 06/21/2000 
+ Bloom    Soap      4623 01/06/2005   null       null   4364 11/03/2002 
+ Sam      Fruits    2802 10/15/2005   2409 10/12/2005   1311 12/12/2006 
+ Helen    Milk      4429 01/06/2003     77 04/09/2000   1839 01/21/2006 
+ Sam      Milk      1607 11/07/2000    987 01/04/2008   4522 12/19/2006 
+ Emily    Cookies   4925 06/09/2002   1656 10/28/2005    173 11/03/2008 
+ Knuth    Cookies   4994 07/17/2003   1485 12/23/2008   2154 10/25/2004 
+ Knuth    Fruits    3756 07/06/2001     24 08/26/2001    733 07/05/2002 
+ Emily    Butter    2862 11/16/2004   2826 02/13/2001   1312 08/22/2004 
+ Bloom    Yogurt    4004 09/17/2003   4043 04/28/2005   1203 04/03/2001 
+ Helen    Yogurt    3832 06/20/2004    787 08/22/2006   2096 01/19/2007 
+ Bloom    Cookies   4546 07/07/2003   4570 10/08/2002   3887 06/08/2006 
+ Helen    Eggs      4162 10/21/2002   3200 06/21/2004   null       null
+ Bloom    Fruits    4085 01/31/2003    612 07/09/2002    776 02/12/2001 
+ Emily    Coke      4379 08/25/2002   1330 02/15/2007   1301 02/20/2004 
+ Helen    Coke      3840 10/15/2005    668 04/11/2001    755 02/04/2007 
+ Sam      Soap      2461 01/06/2003   1798 06/19/2007    165 02/12/2001 
+ Sam      Pepsi     4865 12/19/2002   3189 07/27/2008   1097 11/08/2008 
+ Emily    Yogurt    3765 08/04/2004    730 10/07/2005   2336 03/09/2003 
+ Sam      Yogurt    4728 06/22/2001   1317 09/02/2007   1286 05/01/2005 
+ Knuth    Soap      2915 11/23/2002   1002 08/22/2005    657 02/09/2005 
+ Bloom    Milk      2843 03/30/2001   1820 05/11/2007   1106 09/08/2000 
+ Bloom    Pepsi       94 07/10/2000    254 08/07/2006    526 01/20/2000 
+ Knuth    Pepsi     1481 04/29/2002   3879 02/03/2005    277 08/29/2001 
+ Helen    Fruits    2360 01/21/2005   2774 05/03/2006    415 06/05/2003 
+ Bloom    Eggs      4177 05/17/2005    666 01/24/2000    559 11/30/2000 
+ Knuth    Bread     2063 08/05/2000   3370 04/14/2002   1013 11/02/2002 
+ Knuth    Eggs      4317 11/02/2004   3788 02/06/2006   1339 12/19/2006 
+ Emily    Eggs      2722 11/10/2004   1595 12/01/2003   3030 07/08/2007 
+ Sam      Bread     1599 08/29/2000   2282 04/11/2006   1378 01/18/2002 
+ Emily    Milk      2589 03/14/2005   4986 11/12/2002   3839 09/03/2008 
+ Bloom    Bread     2220 01/22/2003   3792 03/13/2006    944 06/22/2008 
+ Helen    Bread     4114 12/12/2004    389 05/21/2000   1687 06/15/2003 
+ Emily    Pepsi     4531 03/22/2004    538 06/15/2008   2591 01/14/2004 
+ Helen    Soap      1301 08/26/2005   null       null    712 10/25/2006 
+ Bloom    Butter    4279 10/09/2000   1054 08/16/2003   3718 09/17/2008 
+ Helen    Butter     306 11/25/2000    163 08/18/2001    728 01/02/2000 
+
+//conclusion: the result by sql query is total match the result from my c program
+
