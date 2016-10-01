@@ -21,15 +21,46 @@
 // HOST VARIABLES definitions
 //----------------------------------------------------------------------
 EXEC SQL BEGIN DECLARE SECTION;
-struct {
+
+typedef struct {
 	char	*cust;
 	char	*prod;
 	short    dd;
 	short    mm;
-	short	 yy;
+	short	   yy;
 	char	*state;
 	long	 quant;
-}	sale_rec;
+}	prod;
+
+typedef struct {
+   char *prod;
+   int  total;
+   int  count;
+}  avg;
+
+prod sale_rec;
+prod max_quant_prod;
+prod min_quant_prod;
+prod ct_prod;
+prod ny_prod;
+prod nj_prod;
+prod max_product_str[500];
+prod min_product_str[500];
+avg avg_product[500];
+prod max_ct_prod_cust[500];
+prod min_ny_prod_cust[500];
+prod min_nj_prod_cust[500];
+
+int max_quant = 0;
+int min_quant = -1;
+int min_ny_quant = -1;
+int min_nj_quant = -1;
+int sum_quant = 0;
+int quant_num = 0;
+int quant_avg;
+int max_ct_quant = 0;
+
+
 EXEC SQL END DECLARE SECTION;
 EXEC SQL INCLUDE sqlca;
 
@@ -37,13 +68,14 @@ EXEC SQL INCLUDE sqlca;
 // FUNCTION PROTOTYPE declaration
 //----------------------------------------------------------------------
 void	output_record(); //output records to the console
-void  maximum_quant(); //compute the maximum sales quantities along with the corresponding customers, dates
-void  minimum_quant(); //compute the minimum sales quantities along with the corresponding customers, dates
 
 //----------------------------------------------------------------------
 int main(int argc, char* argv[])
 //----------------------------------------------------------------------
 {
+
+
+
    //----------------------------------------------------------------------
    // DATABASE CONNECTION
    //----------------------------------------------------------------------
@@ -59,8 +91,8 @@ int main(int argc, char* argv[])
    //----------------------------------------------------------------------
    // PRINT TITLE
    //----------------------------------------------------------------------   
-   printf(" CUST  | PROD    | DAY | MON | YEAR | STATE | QUANT \n");
-   printf("-------+---------+-----+-----+------+-------+-------\n");
+   printf(" Product  MAX_Q CUSTOMER   DATE       ST MIN_Q CUSTOMER   DATE       ST AVE_Q \n");
+   printf(" ======== ===== ========== ========== == ===== ========== ========== == ===== \n");
    
    //----------------------------------------------------------------------
    // READ RECORDS
@@ -71,10 +103,214 @@ int main(int argc, char* argv[])
    EXEC SQL OPEN mycursor;
    // Fetch Data
    EXEC SQL FETCH FROM mycursor INTO :sale_rec; //fetch the first row
+
+   
+
    while (sqlca.sqlcode == 0) {
       output_record();
+      
+      //max quant for each prod
+      for(int i=0;i<50;i++){
+         if(max_product_str[i].prod<=0){
+            max_product_str[i] = sale_rec;         
+            break;
+         }else if(strcmp(max_product_str[i].prod,sale_rec.prod)==0){
+            if(sale_rec.quant>max_product_str[i].quant){
+               max_product_str[i] = sale_rec;
+            }
+            break;
+         }
+      }
+
+      //min quant for each prod
+      for(int i=0;i<50;i++){
+         if(min_product_str[i].prod<=0){
+            min_product_str[i] = sale_rec;         
+            break;
+         }else if(strcmp(min_product_str[i].prod,sale_rec.prod)==0){
+            if(sale_rec.quant<min_product_str[i].quant){
+               min_product_str[i] = sale_rec;
+            }
+            break;
+         }
+      }
+
+      //avg quant for each prod
+      for(int i=0;i<50;i++){
+         if(avg_product[i].total<=0){
+            avg_product[i].prod = sale_rec.prod;
+            avg_product[i].total = sale_rec.quant;  
+            avg_product[i].count = 1;       
+            break;
+         }else if(strcmp(avg_product[i].prod,sale_rec.prod)==0){
+            avg_product[i].total = avg_product[i].total+sale_rec.quant;
+            avg_product[i].count = avg_product[i].count+1;
+            break;
+         }
+      }
+
+      //max quant of CT for each prod and customer combine
+      if(sale_rec.yy>=2000 && sale_rec.yy<=2005){
+         for(int i=0;i<50;i++){
+           if(max_ct_prod_cust[i].prod<=0){
+               max_ct_prod_cust[i] = sale_rec;         
+               break;
+            }else if(strcmp(max_ct_prod_cust[i].prod,sale_rec.prod)==0 && strcmp(max_ct_prod_cust[i].cust,sale_rec.cust)==0){
+               if(sale_rec.quant>max_ct_prod_cust[i].quant){
+                  min_product_str[i] = sale_rec;
+               }
+               break;
+            }
+         }
+      }
+      
+
+      //min quant of NY for each prod and customer combine
+      for(int i=0;i<50;i++){
+        if(min_ny_prod_cust[i].prod<=0){
+            min_ny_prod_cust[i] = sale_rec;         
+            break;
+         }else if(strcmp(min_ny_prod_cust[i].prod,sale_rec.prod)==0 && strcmp(min_ny_prod_cust[i].cust,sale_rec.cust)==0){
+            if(sale_rec.quant<min_ny_prod_cust[i].quant){
+               min_ny_prod_cust[i] = sale_rec;
+            }
+            break;
+         }
+      }
+
+      //min quant of NJ for each prod and customer combine
+      for(int i=0;i<50;i++){
+        if(min_nj_prod_cust[i].prod<=0){
+            min_nj_prod_cust[i] = sale_rec;         
+            break;
+         }else if(strcmp(min_nj_prod_cust[i].prod,sale_rec.prod)==0 && strcmp(min_nj_prod_cust[i].cust,sale_rec.cust)==0){
+            if(sale_rec.quant<min_nj_prod_cust[i].quant){
+               min_nj_prod_cust[i] = sale_rec;
+            }
+            break;
+         }
+      }
+
+
+      //max quant
+      if(sale_rec.quant > max_quant){
+         max_quant = sale_rec.quant;
+         max_quant_prod = sale_rec;
+      }
+      
+      //min quant
+      if(min_quant==-1){
+         min_quant = sale_rec.quant;
+         min_quant_prod = sale_rec;
+      }else if(sale_rec.quant < min_quant){
+         min_quant = sale_rec.quant;
+         min_quant_prod = sale_rec;       
+      }
+
+      //avg
+      sum_quant = sum_quant + sale_rec.quant;
+      quant_num = quant_num + 1;
+      quant_avg = sum_quant / quant_num;
+
+      //maximum sales quantities for CT      
+      char *CT = "CT";
+      if(strcmp(CT,sale_rec.state)==0 && sale_rec.yy >= 2000 && sale_rec.yy <= 2005){
+         if(sale_rec.quant > max_ct_quant){
+            max_ct_quant = sale_rec.quant;
+            ct_prod = sale_rec;
+            
+         }
+      }
+
+      //minimum sales quantities for NY
+      char *NY = "NY";
+      if(strcmp(NY,sale_rec.state)==0){
+         if(min_ny_quant==-1){
+            min_ny_quant = sale_rec.quant;
+            ny_prod = sale_rec;
+         }else if(sale_rec.quant < min_ny_quant){
+            min_ny_quant = sale_rec.quant;
+            ny_prod = sale_rec;
+         }
+      }
+
+      //minimun sales quantities for NJ
+      char *NJ = "NJ";
+      if(strcmp(NJ,sale_rec.state)==0){
+         if(min_nj_quant==-1){
+            min_nj_quant = sale_rec.quant;
+            nj_prod = sale_rec;
+         }else if(sale_rec.quant < min_nj_quant){
+            min_nj_quant = sale_rec.quant;
+            nj_prod = sale_rec;
+         }
+      }
+
+      //free the char pointer in the struct
+      sale_rec.cust = 0;
+      sale_rec.prod = 0;
+      sale_rec.state = 0;
+                    
       EXEC SQL FETCH FROM mycursor INTO :sale_rec; //fetch the rest rows
    }
+
+   for(int i=0;i<50;i++){
+
+      if(max_product_str[i].prod>0){
+         printf(" %-7s ",max_product_str[i].prod);   // Product
+         printf(" %5ld",max_product_str[i].quant);  // Quantity
+         printf(" %-5s   ",max_product_str[i].cust);   // Customer
+         printf("   %02d/",max_product_str[i].mm);     // Month
+         printf("%02d/",max_product_str[i].dd);     // Day
+         printf("%4d ",max_product_str[i].yy);      // Year
+         printf("%-2s ",max_product_str[i].state);  // State
+         printf("%5ld",min_product_str[i].quant);  // Quantity
+         printf(" %-5s   ",min_product_str[i].cust);   // Customer
+         printf("   %02d/",min_product_str[i].mm);     // Month
+         printf("%02d/",min_product_str[i].dd);     // Day
+         printf("%4d ",min_product_str[i].yy);      // Year
+         printf("%-2s ",min_product_str[i].state);  // State
+         printf(" %5d \n",avg_product[i].total/avg_product[i].count);  // avg
+      }
+   
+   }
+
+   //for(int i=0;i<50;i++){
+   //   if(avg_product[i].count>0){
+   //      printf(" %-7s ",avg_product[i].prod);   // Product
+   //      printf(" %5d",avg_product[i].total);  // Quantity
+   //      printf(" %5d \n",avg_product[i].count);   // Customer
+   //   }      
+   //}
+
+    //----------------------------------------------------------------------
+   // PRINT TITLE
+   //----------------------------------------------------------------------  
+   printf("\n"); 
+   printf(" CUSTOMER PRODUCT CT_MAX DATE       NY_MIN DATE       NJ_MIN DATE      \n");
+   printf(" ======== ======= ====== ========== ====== ========== ====== ========= \n");
+
+   for(int i=0;i<50;i++){
+      if(max_ct_prod_cust[i].prod>0){
+         printf(" %-5s   ",max_ct_prod_cust[i].cust);   // Customer
+         printf(" %-7s",max_ct_prod_cust[i].prod);   // Product
+         printf("  %5ld",max_ct_prod_cust[i].quant);      //max ct quant
+         printf(" %02d/",max_ct_prod_cust[i].mm);     // Month
+         printf("%02d/",max_ct_prod_cust[i].dd);     // Day
+         printf("%4d ",max_ct_prod_cust[i].yy);      // Year
+         printf(" %5ld",min_ny_prod_cust[i].quant);      //min ny quant
+         printf(" %02d/",min_ny_prod_cust[i].mm);     // Month
+         printf("%02d/",min_ny_prod_cust[i].dd);     // Day
+         printf("%4d ",min_ny_prod_cust[i].yy);      // Year
+         printf(" %5ld",min_nj_prod_cust[i].quant);      //min ny quant
+         printf(" %02d/",min_nj_prod_cust[i].mm);     // Month
+         printf("%02d/",min_nj_prod_cust[i].dd);     // Day
+         printf("%4d \n",min_nj_prod_cust[i].yy);      // Year
+         
+      }
+   }
+
+      
    // Close cursor
    EXEC SQL CLOSE mycursor;
 
@@ -85,11 +321,13 @@ int main(int argc, char* argv[])
 void	output_record()
 //----------------------------------------------------------------------
 {
-	printf(" %-5s |",sale_rec.cust);   // Customer
-	printf(" %-7s |",sale_rec.prod);   // Product
-	printf("  %2d |",sale_rec.dd);     // Day
-	printf("  %2d |",sale_rec.mm);     // Month
-	printf(" %4d |",sale_rec.yy);      // Year
-	printf(" %-5s |",sale_rec.state);  // State
-	printf(" %5ld \n",sale_rec.quant);  // Quantity
+	//printf(" %-5s |",sale_rec.cust);   // Customer
+	//printf(" %-7s |",sale_rec.prod);   // Product
+	//printf("  %2d |",sale_rec.dd);     // Day
+	//printf("  %2d |",sale_rec.mm);     // Month
+	//printf(" %4d |",sale_rec.yy);      // Year
+	//printf(" %-5s |",sale_rec.state);  // State
+	//printf(" %5ld \n",sale_rec.quant);  // Quantity
 }
+
+
