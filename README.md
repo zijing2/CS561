@@ -15,3 +15,8 @@ database management system
  *  5. Link         - $ gcc -L "C:\Program Files\PostgreSQL\9.4\lib" -lecpg -o sdap sdap.o
  *  6. Execute      - $ .\sdap
  */
+
+
+ecpg -I "/Applications/Postgres.app/Contents/Versions/9.5/include" sdap.pgc && 
+gcc -c -I "/Applications/Postgres.app/Contents/Versions/9.5/include" sdap.c &&
+gcc -L "/Applications/Postgres.app/Contents/Versions/9.5/lib" -lecpg -o sdap sdap.o

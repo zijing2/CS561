@@ -1,163 +1,53 @@
 //sql query verification
 
-select prod as PRODUCT, MAX(quant) as MAX_Q, MIN(quant) as MIN_Q, AVG(quant) as AVG_Q from sales group by prod;
+drop view IF EXISTS max_sales,min_sales,avg_sales,CT_MAX,NY_MIN,NJ_MIN ;
 
-Eggs	4972	128	2491.2653061224489796
-Milk	4986	26	2195.44
-Soap	4954	70	2237.2888888888888889
-Fruits	4793	24	2434.619047619047619
-Butter	4969	156	2105.2708333333333333
-Bread	4901	42	2190.3333333333333333
-Pepsi	4942	94	2704.3333333333333333
-Cookies	4994	132	2502
-Yogurt	4909	17	2457.2857142857142857
-Coke	4757	81	2525.4313725490196078
+create view max_sales as
+	select B.prod as Product,B.quant as Max_Q,B.cust as CUSTOMER,B.day,B.month,B.year from (select prod , 	MAX(quant) as MAX_Q from sales group by prod) as A
+	left join
+	(select * from sales) as B
+	on B.prod=A.prod and B.quant=A.MAX_Q;
+
+Create view min_sales as
+	select B.prod as Product,B.quant as MIN_Q,B.cust as CUSTOMER,B.day,B.month,B.year from (select prod , 	MIN(quant) as MIN_Q from sales group by prod) as A
+	left join
+	(select * from sales) as B
+	on B.prod=A.prod and B.quant=A.MIN_Q;
+
+create view avg_sales as
+	select prod, AVG(quant) from sales group by prod;
+
+select max_sales.product,max_sales.max_q,max_sales.customer,concat(max_sales.month,'/',max_sales.day,'/',max_sales.year) as MAX_DATE,min_sales.min_q,min_sales.customer,concat(min_sales.month,'/',min_sales.day,'/',min_sales.year) as MIN_DATE,avg_sales.avg 
+from max_sales join min_sales on max_sales.product=min_sales.product join avg_sales on avg_sales.prod=max_sales.product;
 
 
-select cust,prod,MAX(quant)from sales where state='CT' and year>=2000 and year<=2005 group by prod,cust;
+create view CT_MAX as
+	select A.cust as CUSTOMER,A.prod as Product, A.max_quant as CT_MAX, concat(B.month,'/',B.day,'/',B.year) as DATE from 
+	(select cust,prod,MAX(quant) as max_quant from sales where state='CT' and year>=2000 and year<=2005 group by prod,cust) as A left join
+	(select * from sales where state='CT' and year>=2000 and year<=2005) as B
+	on
+	A.prod=B.prod and A.cust=B.cust and A.max_quant = B.quant;
 
-Knuth	Bread	2063
-Sam	Fruits	2802
-Emily	Butter	2862
-Emily	Bread	1626
-Helen	Coke	3840
-Emily	Yogurt	3765
-Bloom	Pepsi	94
-Bloom	Cookies	4546
-Helen	Cookies	1194
-Helen	Pepsi	2768
-Sam	Soap	2461
-Bloom	Bread	2220
-Knuth	Coke	4027
-Bloom	Butter	4279
-Knuth	Yogurt	301
-Knuth	Milk	58
-Bloom	Fruits	4085
-Emily	Soap	4106
-Knuth	Eggs	4317
-Helen	Fruits	2360
-Emily	Eggs	2722
-Knuth	Soap	2915
-Sam	Yogurt	4728
-Emily	Milk	2589
-Bloom	Soap	4623
-Helen	Milk	4429
-Sam	Bread	1599
-Helen	Eggs	4162
-Sam	Pepsi	4865
-Bloom	Milk	2843
-Helen	Soap	1301
-Knuth	Fruits	3756
-Bloom	Eggs	4177
-Emily	Cookies	4925
-Bloom	Yogurt	4004
-Emily	Pepsi	4531
-Knuth	Pepsi	1481
-Knuth	Cookies	4994
-Helen	Yogurt	3832
-Sam	Milk	1607
-Helen	Bread	4114
-Emily	Coke	4379
-Helen	Butter	306
+create view NY_MIN as
+	select A.cust as CUSTOMER,A.prod as Product, A.min_quant as NY_MIN, concat(B.month,'/',B.day,'/',B.year) as DATE from 
+	(select cust,prod,MIN(quant) as min_quant from sales where state='NY' group by prod,cust) as A left join
+	(select * from sales where state='NY') as B
+	on
+	A.prod=B.prod and A.cust=B.cust and A.min_quant = B.quant;
 
-select cust,prod,MIN(quant)from sales where state='NY' group by prod,cust;
 
-Knuth	Bread	3370
-Bloom	Coke	1229
-Knuth	Butter	156
-Sam	Fruits	2409
-Emily	Butter	2826
-Emily	Bread	492
-Helen	Coke	668
-Bloom	Pepsi	254
-Emily	Yogurt	730
-Bloom	Cookies	4570
-Helen	Cookies	1080
-Helen	Pepsi	1931
-Sam	Soap	1798
-Knuth	Yogurt	3445
-Knuth	Milk	2424
-Bloom	Fruits	612
-Emily	Soap	3218
-Knuth	Eggs	3788
-Helen	Fruits	2774
-Emily	Eggs	1595
-Knuth	Soap	1002
-Sam	Coke	142
-Emily	Milk	4986
-Sam	Yogurt	1317
-Helen	Milk	77
-Sam	Bread	2282
-Emily	Fruits	859
-Sam	Butter	1234
-Helen	Eggs	3200
-Bloom	Milk	1820
-Sam	Pepsi	3189
-Sam	Cookies	3376
-Knuth	Fruits	24
-Bloom	Eggs	666
-Emily	Cookies	1656
-Emily	Pepsi	538
-Bloom	Yogurt	4043
-Knuth	Pepsi	3879
-Knuth	Cookies	1485
-Helen	Yogurt	787
-Sam	Milk	987
-Helen	Bread	389
-Emily	Coke	1330
-Sam	Eggs	1417
-Helen	Butter	163
-Bloom	Bread	3792
-Knuth	Coke	1946
-Bloom	Butter	1054
+create view NJ_MIN as
+	select A.cust as CUSTOMER,A.prod as Product, A.min_quant as NJ_MIN, concat(B.month,'/',B.day,'/',B.year) as DATE from 
+	(select cust,prod,MIN(quant) as min_quant from sales where state='NJ' group by prod,cust) as A left join
+	(select * from sales where state='NJ') as B
+	on
+	A.prod=B.prod and A.cust=B.cust and A.min_quant = B.quant;
 
-select cust,prod,MIN(quant)from sales where state='NJ' group by prod,cust;
+select CT_MAX.customer as customer, CT_MAX.product as product, CT_MAX.ct_max as CT_MAX, CT_MAX.date as ct_date, NY_MIN.ny_min as ny_min, NY_MIN.date as ny_date, NJ_MIN.nj_min as nj_min, NJ_MIN.date as nj_date from CT_MAX 
+left outer join NY_MIN on CT_MAX.product=NY_MIN.product and CT_MAX.customer=NY_MIN.customer 
+left outer join NJ_MIN on CT_MAX.product=NJ_MIN.product and CT_MAX.customer=NJ_MIN.customer;
 
-Knuth	Bread	1013
-Bloom	Coke	279
-Emily	Butter	1312
-Sam	Fruits	1311
-Emily	Bread	141
-Helen	Coke	755
-Bloom	Pepsi	526
-Emily	Yogurt	2336
-Bloom	Cookies	3887
-Helen	Cookies	1965
-Helen	Pepsi	1983
-Sam	Soap	165
-Knuth	Coke	766
-Bloom	Butter	3718
-Knuth	Yogurt	2167
-Bloom	Fruits	776
-Emily	Soap	623
-Knuth	Eggs	1339
-Emily	Eggs	3030
-Helen	Fruits	415
-Knuth	Soap	657
-Emily	Milk	3839
-Sam	Yogurt	1286
-Sam	Bread	1378
-Bloom	Soap	4364
-Helen	Milk	1839
-Emily	Fruits	3743
-Sam	Butter	1715
-Bloom	Milk	1106
-Sam	Pepsi	1097
-Helen	Soap	712
-Knuth	Fruits	733
-Bloom	Eggs	559
-Emily	Cookies	173
-Bloom	Yogurt	1203
-Emily	Pepsi	2591
-Knuth	Pepsi	277
-Knuth	Cookies	2154
-Helen	Yogurt	2096
-Helen	Bread	1687
-Sam	Milk	4522
-Emily	Coke	1301
-Helen	Butter	728
-Sam	Eggs	1091
-Bloom	Bread	944
+
 
 
 //result from my c progarm
