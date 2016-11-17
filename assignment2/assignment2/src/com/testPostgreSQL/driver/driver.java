@@ -220,6 +220,7 @@ public class driver {
 		}
 		
 		//report2
+		System.out.println("\n");
 		System.out.println("CUSTOMER PRODUCT MONTH BEFORE_AVG AFTER_AVG");
 		System.out.println("======== ======= ===== ========== =========");
 		Set<String> output_set2 = report2.keySet();
@@ -248,31 +249,81 @@ public class driver {
 
 		
 		//report3
-		System.out.println("CUSTOMER PRODUCT MONTH BEFORE_TOT AFTER_TOT");
-		System.out.println("======== ======= ===== ========== =========");
+		HashMap<String,HashMap<String,Integer>> report3_output = new HashMap<String,HashMap<String,Integer>>();
+		HashMap<String,Integer> item3_output;
+		//System.out.println("CUSTOMER PRODUCT MONTH BEFORE_TOT AFTER_TOT");
+		//System.out.println("======== ======= ===== ========== =========");
 		Set<String> output_set3 = report3.keySet();
 		for (String s_output:output_set3) {	
 			String output_product = s_output.split("_")[0];
 			String output_customer = s_output.split("_")[1];
-			String output_month = s_output.split("_")[2];
-			Object output_before_tot;
-			if(report3.get(s_output).containsKey("before_tot")){
-				output_before_tot = report3.get(s_output).get("before_tot");
+//			String output_month = s_output.split("_")[2];
+//			Object output_before_tot;
+//			if(report3.get(s_output).containsKey("before_tot")){
+//				output_before_tot = report3.get(s_output).get("before_tot");
+//			}else{
+//				output_before_tot = null;
+//			}
+//			Object output_after_tot;
+//			if(report3.get(s_output).containsKey("after_tot")){
+//				output_after_tot = report3.get(s_output).get("after_tot");
+//			}else{
+//				output_after_tot = null;
+//			}
+//			if("Butter_Helen".equals(output_product+"_"+output_customer)){
+//				System.out.println(report3.get(s_output));
+//			}
+			
+			if(report3_output.containsKey(output_product+"_"+output_customer)){
+				if(report3.get(s_output).containsKey("before_tot")){
+					report3_output.get(output_product+"_"+output_customer).put("before_tot", report3_output.get(output_product+"_"+output_customer).get("before_tot")+report3.get(s_output).get("before_tot"));
+				}
+				if(report3.get(s_output).containsKey("after_tot")){
+					report3_output.get(output_product+"_"+output_customer).put("after_tot", report3_output.get(output_product+"_"+output_customer).get("after_tot")+report3.get(s_output).get("after_tot"));
+				}
 			}else{
-				output_before_tot = null;
-			}
-			Object output_after_tot;
-			if(report3.get(s_output).containsKey("after_tot")){
-				output_after_tot = report3.get(s_output).get("after_tot");
-			}else{
-				output_after_tot = null;
+				item3_output = new HashMap<String,Integer>();
+				
+				if(report3.get(s_output).containsKey("before_tot")){
+					item3_output.put("before_tot",report3.get(s_output).get("before_tot"));
+					report3_output.put(output_product+"_"+output_customer,item3_output);
+				}else{
+					item3_output.put("before_tot",0);
+					report3_output.put(output_product+"_"+output_customer,item3_output);
+				}
+				report3_output.put(output_product+"_"+output_customer,item3_output);
+				if(report3.get(s_output).containsKey("after_tot")){
+					item3_output.put("after_tot",report3.get(s_output).get("after_tot"));
+					//report3_output.get(output_product+"_"+output_customer).put("after_tot",report3_output.get(s_output).get("after_tot"));
+				}else{
+					item3_output.put("after_tot",0);
+					//report3_output.get(output_product+"_"+output_customer).put("after_tot",0);
+				}
+				report3_output.put(output_product+"_"+output_customer,item3_output);
 			}
 			
+//			if("Butter_Helen".equals(output_product+"_"+output_customer)){
+//				System.out.println(report3_output);
+//			}
+			
 			//System.out.println(output_customer+" "+output_product+" "+output_month+" "+output_before_tot+" "+output_after_tot);
-			System.out.format("%-8s %-7s %5s %10d %9d\n",output_customer,output_product,output_month,output_before_tot,output_after_tot);
+			//System.out.format("%-8s %-7s %5s %10d %9d\n",output_customer,output_product,output_month,output_before_tot,output_after_tot);
 		}
 		
-		//System.out.println(report3);
+		System.out.println("\n");
+		System.out.println("CUSTOMER PRODUCT BEFORE_TOT AFTER_TOT");
+		System.out.println("======== ======= ========== =========");
+		Set<String> output_set4 = report3_output.keySet();
+		for (String s_output1:output_set4) {	
+			String output_product = s_output1.split("_")[0];
+			String output_customer = s_output1.split("_")[1];
+			int output_before_tot = report3_output.get(s_output1).get("before_tot");
+			int output_after_tot = report3_output.get(s_output1).get("after_tot");
+			//System.out.println(output_customer+" "+output_product+" "+output_before_tot+" "+output_after_tot);
+			System.out.format("%-8s %-7s %10d %9d\n",output_customer,output_product,output_before_tot,output_after_tot);
+		}
+		
+		//System.out.println(report3_output);
 		//System.out.println(cust_avg_sale_of_other_prod);
 		//System.out.println(prod_avg_sale_of_other_cust);
 		

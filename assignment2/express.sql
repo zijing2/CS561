@@ -34,10 +34,15 @@ AFTER_AVG AS (
 select L.cust as cust,L.prod as prod,L.month as month,avg(R.quant) as avg
 from sales L, sales R
 where L.cust=R.cust and L.prod=R.prod and R.month=L.month+1
-group by L.cust,L.prod,L.month)
+group by L.cust,L.prod,L.month),
+CUST_PROD_MON AS(
+select cust,prod,month
+from sales
+group by cust,prod,month
+)
 
-select sales.cust as CUSTOMER,sales.prod as PRODUCT,sales.month as MONTH,floor(BEFORE_AVG.avg) as BEFORE_AVG,floor(AFTER_AVG.avg) as AFTER_AVG
-from (sales full outer join BEFORE_AVG on sales.cust=BEFORE_AVG.cust and sales.prod=BEFORE_AVG.prod and sales.month=BEFORE_AVG.month) full outer join AFTER_AVG on sales.cust=AFTER_AVG.cust and sales.prod=AFTER_AVG.prod and sales.month=AFTER_AVG.month
+select CUST_PROD_MON.cust as CUSTOMER,CUST_PROD_MON.prod as PRODUCT,CUST_PROD_MON.month as MONTH,floor(BEFORE_AVG.avg) as BEFORE_AVG,floor(AFTER_AVG.avg) as AFTER_AVG
+from (CUST_PROD_MON full outer join BEFORE_AVG on CUST_PROD_MON.cust=BEFORE_AVG.cust and CUST_PROD_MON.prod=BEFORE_AVG.prod and CUST_PROD_MON.month=BEFORE_AVG.month) full outer join AFTER_AVG on CUST_PROD_MON.cust=AFTER_AVG.cust and CUST_PROD_MON.prod=AFTER_AVG.prod and CUST_PROD_MON.month=AFTER_AVG.month
 
 /* report3 */
 WITH AVG_MAX AS(
@@ -56,8 +61,17 @@ select AVG_MAX.prod as prod,AVG_MAX.cust as cust,AVG_MAX.month as month,count(*)
 from AVG_MAX,sales
 where AVG_MAX.cust = sales.cust and AVG_MAX.prod = sales.prod and sales.month=AVG_MAX.month+1 and sales.quant<=AVG_MAX.max and sales.quant>=AVG_MAX.avg
 group by AVG_MAX.prod,AVG_MAX.cust,AVG_MAX.month
+),
+CUST_PROD_MON AS(
+select cust,prod,month
+from sales
+group by cust,prod,month
 )
 
-select sales.cust as CUSTOMER,sales.prod as PRODUCT,sales.month as MONTH,BEFORE_TOT.count as BEFORE_TOT,AFTER_TOT.count as AFTER_TOT
-from (sales full outer join BEFORE_TOT on sales.cust=BEFORE_TOT.cust and sales.prod=BEFORE_TOT.prod and sales.month=BEFORE_TOT.month) full outer join AFTER_TOT on sales.cust=AFTER_TOT.cust and sales.prod=AFTER_TOT.prod and sales.month=AFTER_TOT.month
+/*select CUST_PROD_MON.cust as CUSTOMER,CUST_PROD_MON.prod as PRODUCT,CUST_PROD_MON.month as MONTH,BEFORE_TOT.count as BEFORE_TOT,AFTER_TOT.count as AFTER_TOT
+from (CUST_PROD_MON full outer join BEFORE_TOT on CUST_PROD_MON.cust=BEFORE_TOT.cust and CUST_PROD_MON.prod=BEFORE_TOT.prod and CUST_PROD_MON.month=BEFORE_TOT.month) full outer join AFTER_TOT on CUST_PROD_MON.cust=AFTER_TOT.cust and CUST_PROD_MON.prod=AFTER_TOT.prod and CUST_PROD_MON.month=AFTER_TOT.month*/
+
+select CUST_PROD_MON.cust as CUSTOMER,CUST_PROD_MON.prod as PRODUCT,sum(BEFORE_TOT.count) as BEFORE_TOT,sum(AFTER_TOT.count) as AFTER_TOT
+from (CUST_PROD_MON full outer join BEFORE_TOT on CUST_PROD_MON.cust=BEFORE_TOT.cust and CUST_PROD_MON.prod=BEFORE_TOT.prod and CUST_PROD_MON.month=BEFORE_TOT.month) full outer join AFTER_TOT on CUST_PROD_MON.cust=AFTER_TOT.cust and CUST_PROD_MON.prod=AFTER_TOT.prod and CUST_PROD_MON.month=AFTER_TOT.month 
+group by CUSTOMER,PRODUCT
 
