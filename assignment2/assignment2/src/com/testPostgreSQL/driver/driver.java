@@ -268,7 +268,7 @@ public class driver {
 				output_after_tot = null;
 			}
 			
-			//System.out.println(output_product+" "+output_customer+" "+output_month+" "+output_before_tot+" "+output_after_tot);
+			//System.out.println(output_customer+" "+output_product+" "+output_month+" "+output_before_tot+" "+output_after_tot);
 			System.out.format("%-8s %-7s %5s %10d %9d\n",output_customer,output_product,output_month,output_before_tot,output_after_tot);
 		}
 		
