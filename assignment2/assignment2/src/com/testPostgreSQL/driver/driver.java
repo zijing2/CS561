@@ -11,7 +11,6 @@ import java.util.Set;
 public class driver {
 
 	public static void main(String[] args) {
-		
 		//the customer's average sale of this product
 		HashMap<String,HashMap<String,Integer>> report1 = new HashMap<String,HashMap<String,Integer>>();
 		HashMap<String,Integer> item;
@@ -326,7 +325,7 @@ public class driver {
 		//System.out.println(report3_output);
 		//System.out.println(cust_avg_sale_of_other_prod);
 		//System.out.println(prod_avg_sale_of_other_cust);
-		
+//		
 	}
 
 }
